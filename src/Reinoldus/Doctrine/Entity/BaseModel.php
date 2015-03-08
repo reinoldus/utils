@@ -10,7 +10,7 @@ namespace Reinoldus\Doctrine\Model;
 
 use Doctrine\ORM\Mapping as ORM;
 
-abstract class BaseModel {
+abstract class BaseEntity {
 	/**
 	 * @var int
 	 *

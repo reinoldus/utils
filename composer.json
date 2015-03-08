@@ -2,7 +2,7 @@
   "name": "reinoldus/utils",
   "autoload": {
     "psr-0" : {
-      "Reinoldus\\Doctrine\\Model" : "src"
+      "Reinoldus\\" : "src"
     }
   }
 }

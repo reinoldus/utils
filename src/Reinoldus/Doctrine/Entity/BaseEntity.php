@@ -6,7 +6,7 @@
  * Time: 10:23 AM
  */
 
-namespace Reinoldus\Doctrine\Model;
+namespace Reinoldus\Doctrine\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 

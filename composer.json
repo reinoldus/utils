@@ -2,7 +2,7 @@
   "name": "weaverryan/derp-dangerzone",
   "autoload": {
     "psr-0" : {
-      "Reinoldus\Doctrine\Model" : "src"
+      "Reinoldus\\Doctrine\\Model" : "src"
     }
   }
 }

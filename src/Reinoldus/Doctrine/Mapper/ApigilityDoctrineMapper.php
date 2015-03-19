@@ -10,6 +10,13 @@ namespace Reinoldus\Doctrine\Mapper;
 
 class ApigilityDoctrineMapper {
 
+	/**
+	 * @var ServiceLocatorInterface
+	 */
+	private $serviceLocator;
 
+	public function __construct(ServiceLocatorInterface $serviceLocator) {
+		$this->serviceLocator = $serviceLocator;
+	}
 
 }

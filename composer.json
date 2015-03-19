@@ -1,8 +1,9 @@
 {
   "name": "reinoldus/utils",
   "autoload": {
-    "psr-0" : {
-      "Reinoldus\\" : "src"
-    }
+    "psr-4": {
+      "Reinoldus\\": "src/"
+    },
+    "files": ["Module.php"]
   }
 }

@@ -8,6 +8,9 @@
 
 namespace Reinoldus\Doctrine\Mapper;
 
+use Reinoldus\Doctrine\Entity\BaseEntity;
+use Zend\ServiceManager\ServiceLocatorInterface;
+
 class ApigilityDoctrineMapper {
 
 	/**
@@ -19,4 +22,67 @@ class ApigilityDoctrineMapper {
 		$this->serviceLocator = $serviceLocator;
 	}
 
+
+	public function create(BaseEntity $entity, $data) {
+		$attributes = $entity->getAttributes();
+
+		if(!is_object($data)) {
+			throw new \Exception("No data object provided");
+		}
+
+		foreach($attributes as $attribute) {
+			if(property_exists($data, $attribute)) {
+				if(method_exists($entity, "set" . $attribute)) {
+					$entity->{"set" . $attribute}($data->{$attribute});
+				}
+			}
+		}
+
+		return $entity;
+	}
+
+	public function getArrayAll($all) {
+		$return = [];
+		foreach($all as $single) {
+			/**
+			 * @var BaseEntity $single
+			 */
+			$attributes = $single->getAttributes();
+			$putArray = array();
+			foreach($attributes as $attribute) {
+				if(method_exists($single, "get" . $attribute)) {
+					$putArray[$attribute] = $single->{"get" . $attribute}();
+				}
+			}
+
+			$return[] = $putArray;
+		}
+
+		return $return;
+	}
+
+	public function getArraySingle(BaseEntity $single) {
+		$attributes = $single->getAttributes();
+		$putArray = array();
+		foreach($attributes as $attribute) {
+			if(method_exists($single, "get" . $attribute)) {
+				$putArray[$attribute] = $single->{"get" . $attribute}();
+			}
+		}
+
+		return $putArray;
+	}
+
+	public function updateSingle($data, BaseEntity $model) {
+
+		foreach($model->getAttributes() as $attribute) {
+			if(property_exists($data, $attribute)) {
+				if(method_exists($model, "set" . $attribute)) {
+					$model->{"set" . $attribute}($data->{$attribute});
+				}
+			}
+		}
+
+		return $model;
+	}
 }

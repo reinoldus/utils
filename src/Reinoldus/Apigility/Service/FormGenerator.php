@@ -6,7 +6,7 @@
  * Time: 17:21
  */
 
-namespace Reinoldus\Apigility;
+namespace Reinoldus\Apigility\Service;
 
 
 use Zend\Form\Form;

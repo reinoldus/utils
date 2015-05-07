@@ -9,7 +9,7 @@
 namespace Reinoldus\Apigility\Factory;
 
 
-use Reinoldus\Apigility\FormGenerator;
+use Reinoldus\Apigility\Service\FormGenerator;
 use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;

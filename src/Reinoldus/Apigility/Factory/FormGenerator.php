@@ -9,7 +9,7 @@
 namespace Reinoldus\Apigility\Factory;
 
 
-use Reinoldus\Apigility\Service\FormGenerator;
+use Reinoldus\Apigility\Service;
 use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -25,6 +25,6 @@ class FormGenerator  implements FactoryInterface {
 	public function createService(ServiceLocatorInterface $serviceLocator)
 	{
 
-		return new FormGenerator($serviceLocator);
+		return new Service\FormGenerator($serviceLocator);
 	}
 }

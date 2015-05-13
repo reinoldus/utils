@@ -29,4 +29,12 @@ return array(
 			'fields' => 'string',
 		),
 	),
+	'view_manager' => array(
+		'template_map' => array(
+			'reinoldus/form/formRowPartial'           => __DIR__ . '/../view/apigility/form_row_partial.phtml',
+		),
+		'template_path_stack' => array(
+			__DIR__ . '/../view',
+		),
+	),
 );

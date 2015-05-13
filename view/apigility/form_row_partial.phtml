@@ -1,0 +1,50 @@
+<?php
+/**
+ * @var \Zend\Form\ElementInterface $element
+ */
+$element = $this->element;
+$type = $this->element->getAttribute('type');
+
+$dataBind = $element->getAttribute('data-bind');
+
+$dataBind = explode(',', $dataBind);
+$dataBindSurrounding = '';
+foreach($dataBind as $bind) {
+	if(stristr($bind, 'visible:')) {
+		$dataBindSurrounding .= trim($bind);
+	}
+}
+
+$noSurrounding = array('hidden', 'submit');
+
+?>
+<?php
+if(!in_array($type, $noSurrounding)) {
+	?>
+<div class="form-group" data-bind="<?=$dataBindSurrounding?>">
+
+	<label for="<?=$this->element->getName();?>">
+		<?=$this->label?>
+	</label>
+	<span class="error"></span>
+<?php
+}
+
+switch($type) {
+	case 'text':
+		echo $this->formText($this->element);
+		break;
+	case 'submit':
+		echo $this->formSubmit($this->element);
+		break;
+	case 'hidden':
+		echo $this->formElement($this->element);
+		break;
+	default:
+		echo $this->formElement($this->element);
+}
+
+if(!in_array($type, $noSurrounding)) {
+	echo '</div>';
+}
+?>

@@ -11,7 +11,8 @@ return array(
 		    'Reinoldus\Doctrine\Mapper\ApigilityDoctrineMapper' => 'Reinoldus\Doctrine\Factory\ApigilityDoctrineMapperFactory',
 		    'Reinoldus\ZfcUser\Mapper\ZfcUserOauth2Mapper' => function($sl) {
 				return new Reinoldus\ZfcUser\Mapper\ZfcUserOauth2Mapper($sl);
-		    }
+		    },
+		    'Reinoldus\Apigility\Service\FormGenerator' => 'Reinoldus\Apigility\Service\FormGenerator'
 	    ),
 	    'invokables' => array(
 		    'Reinoldus\Doctrine\Mapper\ApigilityDoctrineToArray' => 'Reinoldus\Doctrine\Mapper\ApigilityDoctrineToArray'

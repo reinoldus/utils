@@ -14,7 +14,7 @@ use Zend\ServiceManager\AbstractFactoryInterface;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class ApigilityFormGeneratorFactory  implements FactoryInterface {
+class FormGeneratorFactory  implements FactoryInterface {
 
 	/**
 	 * Create service

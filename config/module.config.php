@@ -32,6 +32,9 @@ return array(
 	'view_manager' => array(
 		'template_map' => array(
 			'reinoldus/form/formRowPartial'           => __DIR__ . '/../view/apigility/form_row_partial.phtml',
+			'reinoldus/listjs/defaultPartial'           => __DIR__ . '/../view/listjs/default_partial.phtml',
+			'reinoldus/listjs/defaultPartialNext'           => __DIR__ . '/../view/listjs/default_partial_next.phtml',
+			'reinoldus/listjs/blankPartial'           => __DIR__ . '/../view/listjs/blank_partial.phtml',
 		),
 		'template_path_stack' => array(
 			__DIR__ . '/../view',

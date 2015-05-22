@@ -1,0 +1,58 @@
+<input class="search form-control" placeholder="Search" width="100px"/><br />
+<button class="sort btn btn-primary" data-sort="name">Sort by name</button>
+<hr>
+<table class="table">
+	<?php
+
+	if(!isset($this->renameAttributes)) {
+		$renameAttributes = array();
+	} else {
+		$renameAttributes = $this->renameAttributes;
+	}
+	if(!isset($this->alternativeFunctions)) {
+		$alternativeFunctions = array();
+	} else {
+		$alternativeFunctions = $this->alternativeFunctions;
+	}
+
+	$values = $this->values;
+	echo '<thead>';
+	if($values !== null && !empty($values)) {
+		foreach($values[0]->getAttributes() as $attribute) {
+			if(array_key_exists($attribute, $renameAttributes)) {
+				echo '<th class="highlight_list_item">' . $renameAttributes[$attribute] . '</th>';
+			} elseif(!in_array($attribute, $this->ignoreAttribute)) {
+				echo '<th class="highlight_list_item">' . $attribute . '</th>';
+			}
+		}
+	}
+	echo '<th class="highlight_list_item">Aktionen</th>';
+	echo '</thead>';
+	echo '<tbody class="list">';
+	foreach($values as $single) {
+		echo "<tr>";
+		foreach($single->getAttributes() as $attribute) {
+			if(!in_array($attribute, $this->ignoreAttribute)) {
+				echo '<td class="' . $attribute . '">';
+				$var = $single->{"get" . $attribute}();
+				if(array_key_exists($attribute, $alternativeFunctions)) {
+					echo $var->{$alternativeFunctions[$attribute]}();
+				} elseif(is_a($var, 'DateTime')) {
+					echo $var->format('Y-m-d H:i:s');
+				} else {
+					echo $var;
+				}
+				echo '</td>';
+			}
+		}
+		echo '<td>';
+		?>
+		<a class="listjs_edit" data-id="<?=$single->getId()?>"><span class="glyphicon glyphicon-pencil"></span></a>
+		<a class="listjs_delete" data-id="<?=$single->getId()?>"><span class="glyphicon glyphicon-remove"></span></a>
+		<?php
+		echo '</td>';
+		echo '</tr>';
+	}
+	echo '</tbody>';
+	?>
+</table>

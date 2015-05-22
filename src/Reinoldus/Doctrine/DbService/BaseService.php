@@ -9,13 +9,15 @@
 namespace Reinoldus\Doctrine\DbService;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\QueryBuilder;
 
 use Doctrine\ORM\NoResultException;
+use Reinoldus\Doctrine\Entity\BaseEntity;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-abstract class BaseService
+class BaseService
 {
 	/**
 	 * @var EntityManager
@@ -28,13 +30,20 @@ abstract class BaseService
 	protected $serviceLocator;
 
 	/**
+	 * @var string
+	 */
+	protected $entityName;
+
+	/**
 	 * @param EntityManager $em
 	 * @param ServiceLocatorInterface $serviceLocator
+	 * @param string $entityName
 	 */
-	public function __construct(EntityManager $em, ServiceLocatorInterface $serviceLocator)
+	public function __construct(EntityManager $em, ServiceLocatorInterface $serviceLocator, $entityName=null)
 	{
 		$this->em = $em;
 		$this->serviceLocator = $serviceLocator;
+		$this->entityName = $entityName;
 	}
 
 	/**
@@ -50,8 +59,11 @@ abstract class BaseService
 	 */
 	public function getRepository()
 	{
-
-		$repository = $this->em->getRepository(str_replace('Service', '', str_replace('Service', 'Entity', get_class($this))));
+		if($this->entityName !== null) {
+			$repository = $this->em->getRepository($this->entityName);
+		} else {
+			$repository = $this->em->getRepository(str_replace('Service', '', str_replace('Service', 'Entity', get_class($this))));
+		}
 
 		return $repository;
 	}
@@ -72,4 +84,52 @@ abstract class BaseService
 		return $this->em;
 	}
 
+	/**
+	 * @param integer $id
+	 * @return BaseEntity|null
+	 * @throws NoResultException
+	 */
+	public function findById($id)
+	{
+		/**
+		 * @var $model BaseEntity
+		 */
+		$model = $this->getRepository()->findOneBy(array("id" => $id));
+
+		if($model === null) {
+			throw new NoResultException();
+		}
+
+		return $model;
+	}
+
+	/**
+	 * @return BaseEntity[]|ArrayCollection
+	 */
+	public function findAll()
+	{
+		$model = $this->getRepository()->findAll();
+
+		return $model;
+	}
+
+	/**
+	 * @param array $criteria
+	 * @return BaseEntity[]
+	 */
+	public function findBy(array $criteria)
+	{
+		$models = $this->getRepository()->findBy($criteria);
+
+		return $models;
+	}
+
+	/**
+	 * @param array $order should look like this: array('title'=>'asc')
+	 * @return array
+	 */
+	public function findAllOrderBy($order)
+	{
+		return $this->getRepository()->findBy(array(), $order);
+	}
 }

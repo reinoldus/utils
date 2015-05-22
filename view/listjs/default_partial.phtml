@@ -1,0 +1,122 @@
+<input class="search form-control" placeholder="Search" width="100px"/><br />
+<?php
+
+if(isset($this->searchAndFilter)) {
+	echo $this->searchAndFilter;
+}
+
+?>
+<hr>
+<table class="table">
+	<?php
+
+	if(!isset($this->renameAttributes)) {
+		$renameAttributes = array();
+	} else {
+		$renameAttributes = $this->renameAttributes;
+	}
+	if(!isset($this->alternativeFunctions)) {
+		$alternativeFunctions = array();
+	} else {
+		$alternativeFunctions = $this->alternativeFunctions;
+	}
+	if(!isset($this->hiddenAttributes)) {
+		$hiddenAttributes = array();
+	} else {
+		$hiddenAttributes = $this->hiddenAttributes;
+	}
+	if(isset($this->colorLine)) {
+		$colorLine[0] = $this->colorLine[0];
+	} else {
+		$colorLine[0] = null;
+	}
+
+	$values = $this->values;
+	echo '<thead>';
+	if($values !== null && !empty($values)) {
+		$headAttributes = function($attribute, $hiddenAttributes, $renameAttributes) {
+			if(in_array($attribute, $hiddenAttributes)) {
+				echo '<th style="display: none">' . $attribute . '</th>';
+			} elseif(array_key_exists($attribute, $renameAttributes)) {
+				echo '<th class="highlight_list_item">' . $renameAttributes[$attribute] . '</th>';
+			} elseif(!in_array($attribute, $this->ignoreAttribute)) {
+				echo '<th class="highlight_list_item">' . $attribute . '</th>';
+			}
+		};
+	if(isset($this->showAttributes)) {
+		foreach($this->showAttributes as $attribute) {
+			$headAttributes($attribute, $hiddenAttributes, $renameAttributes);
+		}
+	} else {
+		foreach($values[0]->getAttributes() as $attribute) {
+			$headAttributes($attribute, $hiddenAttributes, $renameAttributes);
+		}
+	}
+
+	}
+	if(isset($this->actions) && $this->actions) {
+		echo '<th class="highlight_list_item">Aktionen</th>';
+	}
+	echo '</thead>';
+	echo '<tbody class="list">';
+	foreach($values as $single) {
+		/**
+		 * @var \Reinoldus\Doctrine\Entity\BaseEntity $single
+		 */
+		if($colorLine[0] !== null && is_callable($colorLine[0]) && $single !== null) {
+			echo "<tr ";
+			echo $colorLine[0]($single);
+			echo ">";
+		} else {
+			echo "<tr>";
+		}
+		$handleAttribute = function($attribute, $hiddenAttributes, $single, $alternativeFunctions) {
+			if(!in_array($attribute, $this->ignoreAttribute)) {
+				if(in_array($attribute, $hiddenAttributes)) {
+					echo '<td class="' . $attribute . '" style="display:none;">';
+				} else {
+					echo '<td class="' . $attribute . '" >';
+				}
+
+				$var = $single->{"get" . $attribute}();
+				if($var !== null) {
+					if(array_key_exists($attribute, $alternativeFunctions)) {
+						if(is_callable($alternativeFunctions[$attribute])) {
+							echo $alternativeFunctions[$attribute]($var);
+						} else {
+							echo $var->{$alternativeFunctions[$attribute]}();
+						}
+					} elseif(is_a($var, 'DateTime')) {
+						echo $var->format('Y-m-d H:i:s');
+					} else {
+						echo $var;
+					}
+				}
+				echo '</td>';
+			}
+		};
+
+		if(isset($this->showAttributes)) {
+			foreach($this->showAttributes as $attribute) {
+				$handleAttribute($attribute, $hiddenAttributes, $single, $alternativeFunctions);
+			}
+		} else {
+			foreach($single->getAttributes() as $attribute) {
+				$handleAttribute($attribute, $hiddenAttributes, $single, $alternativeFunctions);
+			}
+		}
+
+		if(isset($this->actions) && $this->actions) {
+			echo '<td>';
+			?>
+			<a class="listjs_edit" data-id="<?=$single->getId()?>"><span class="glyphicon glyphicon-pencil"></span></a>
+			<a class="listjs_delete" data-id="<?=$single->getId()?>"><span class="glyphicon glyphicon-remove"></span></a>
+			<?php
+			echo '</td>';
+		}
+		echo '</tr>';
+	}
+	echo '</tbody>';
+	?>
+</table>
+<ul class="pagination"></ul>

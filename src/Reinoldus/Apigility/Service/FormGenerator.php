@@ -52,42 +52,52 @@ class FormGenerator {
 	public function makeForm($name) {
 		$config = $this->config['input_filter_specs'][$name];
 
+		if(isset($this->config['form_config'])) {
+			$formConfig = $this->config['form_config'][str_replace('Validator', 'Form', $name)];
+		}
+
 		$form = new Form();
 
 		$order = 1000 * count($config);
 		$orders = array();
 
-		foreach($config as $input) {
-			$orders[$input['name']] = $order;
+		foreach($formConfig as $name => $inpu) {
+			$orders[$name] = $order;
 			$order = $order - 1000;
 		}
 
 		$classes = '';
-		foreach($config as $input) {
-			$formControl = null;
-			if(array_key_exists('description', $input)) {
-				$formControl = json_decode($input['description']);
-				if(array_key_exists('after', $formControl)) {
-					$orders[$input['name']] = $orders[$formControl->after] - 10;
+		if(isset($formConfig)) {
+			foreach($formConfig as $name => $input) {
+				if(array_key_exists('after', $input)) {
+					$orders[$input['name']] = $orders[$input['after']] - 10;
 				}
-			}
 
-			$form->add(array(
-				'name' => $input['name'],
-				'type' => $this->guessType($input['name']),
-				'options' => array(
-					'label' => $formControl->label,
-				),
-				'attributes' => array(
-					'class' => 'form-control '.$classes,
-					'placeholder' => 'Bitte ausfüllen',
-					'id' => $this->prefix . $input['name'],
-					//kjs
-					'data-bind' => $this->makeDataBind($formControl, $input),
-				)
-			), array(
-				'priority' => $orders[$input['name']]
-			));
+				if(array_key_exists('type', $input)) {
+					$type = $input['type'];
+				} else {
+					$type = $this->guessType($name);
+				}
+
+				$form->add(array(
+					'name' => $name,
+					'type' => $type,
+					'options' => array(
+						'label' => $input['label'],
+					),
+					'attributes' => array(
+						'class' => 'form-control '.$classes,
+						'placeholder' => 'Bitte ausfüllen',
+						'id' => $this->prefix . $name,
+						//kjs
+						'data-bind' => $this->makeDataBind($input, $name),
+					)
+				), array(
+					'priority' => $orders[$name]
+				));
+			}
+		} else {
+			throw new \Exception("No form config specified");
 		}
 
 		$form->add(array(
@@ -153,28 +163,28 @@ class FormGenerator {
 
 	/**
 	 * @param $formControl
-	 * @param array $input
+	 * @param $name
 	 * @return string
 	 */
-	private function makeDataBind($formControl, array $input) {
+	private function makeDataBind($formControl, $name) {
 		$dataBind = '';
 
-		if(property_exists($formControl, 'show')) {
-			if($formControl->show->type == 'select') {
-				$kjsVar = 'show' . $formControl->show->relatedElement . $formControl->show->value;
-				$this->dataBindArray['visible'] = 'visible: show' . $formControl->show->relatedElement . $formControl->show->value;
+		if(isset($formControl['show'])) {
+			if($formControl['show']['type'] == 'select') {
+				$kjsVar = 'show' . $formControl['show']['relatedElement'] . $formControl['show']['value'];
+				$this->dataBindArray['visible'] = 'visible: show' . $formControl['show']['relatedElement'] . $formControl['show']['value'];
 				$dataBind .= $this->dataBindArray['visible'] . ', ';
 				$this->jsConfig['kjsVar'][] = array(
 					'var' => $kjsVar,
-					'type' => $formControl->show->type,
-					'relatedElement' => $formControl->show->relatedElement,
+					'type' => $formControl['show']['type'],
+					'relatedElement' => $formControl['show']['relatedElement'],
 					'init' => false,
-					'showOnValue' => $formControl->show->value
+					'showOnValue' => $formControl['show']['value']
 				);
 			}
 		}
 
-		$dataBind .= 'value:' . $input['name'];
+		$dataBind .= 'value:' . $name;
 		return $dataBind;
 	}
 

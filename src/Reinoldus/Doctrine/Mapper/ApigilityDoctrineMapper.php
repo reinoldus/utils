@@ -73,10 +73,10 @@ class ApigilityDoctrineMapper {
 		return $putArray;
 	}
 
-	public function updateSingle($data, BaseEntity $model) {
+	public function updateSingle($data, BaseEntity $model, $except=array()) {
 
 		foreach($model->getAttributes() as $attribute) {
-			if(property_exists($data, $attribute)) {
+			if(!in_array($attribute, $except) && property_exists($data, $attribute)) {
 				if(method_exists($model, "set" . $attribute)) {
 					$model->{"set" . $attribute}($data->{$attribute});
 				}

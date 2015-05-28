@@ -65,7 +65,7 @@ if(isset($this->searchAndFilter)) {
 		 */
 		if($colorLine[0] !== null && is_callable($colorLine[0]) && $single !== null) {
 			echo "<tr ";
-			echo $colorLine[0]($single);
+			$colorLine[0]($single);
 			echo ">";
 		} else {
 			echo "<tr>";

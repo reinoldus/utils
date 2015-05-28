@@ -22,7 +22,7 @@ if(isset($this->searchAndFilter)) {
 		if(isset($this->showAttributes)) {
 			foreach($this->showAttributes as $name => $attrConfig) {
 				if(isset($attrConfig['hide']) && $attrConfig['hide']) {
-					echo '<th style="display: none">' . $name . '</th>';
+					echo '<th style="display: none" class="attribute highlight_list_item" data-attribute-name="' . $name . '" >' . $name . '</th>';
 				} elseif(isset($attrConfig['name'])) {
 					echo '<th class="attribute highlight_list_item" data-attribute-name="' . $name . '" >' . $attrConfig['name']. '</th>';
 				} else {
@@ -47,31 +47,6 @@ if(isset($this->searchAndFilter)) {
 		} else {
 			echo "<tr>";
 		}
-		$handleAttribute = function($attribute, $hiddenAttributes, $single, $alternativeFunctions) {
-			if(!in_array($attribute, $this->ignoreAttribute)) {
-				if(in_array($attribute, $hiddenAttributes)) {
-					echo '<td class="' . $attribute . '" style="display:none;">';
-				} else {
-					echo '<td class="' . $attribute . '">';
-				}
-
-				$var = $single->{"get" . $attribute}();
-				if($var !== null) {
-					if(array_key_exists($attribute, $alternativeFunctions)) {
-						if(is_callable($alternativeFunctions[$attribute])) {
-							echo $alternativeFunctions[$attribute]($var);
-						} else {
-							echo $var->{$alternativeFunctions[$attribute]}();
-						}
-					} elseif(is_a($var, 'DateTime')) {
-						echo $var->format('Y-m-d H:i:s');
-					} else {
-						echo $var;
-					}
-				}
-				echo '</td>';
-			}
-		};
 
 		foreach($this->showAttributes as $name => $attrConfig) {
 			if(isset($attrConfig['hide']) && $attrConfig['hide']) {
@@ -80,11 +55,20 @@ if(isset($this->searchAndFilter)) {
 				echo '<td class="' . $name . '" >';
 			}
 
-			$var = $single->{"get" . $name}();
+            if(isset($attrConfig['getter'])) {
+                $var = $single->{"get" . $attrConfig['getter']}();
+            } else {
+                $var = $single->{"get" . $name}();
+            }
+
 			if($var !== null) {
-				if(isset($attrConfig['func'])) {
+                if(isset($attrConfig['template'])) {
+                    preg_match_all("/@@{([A-Za-z0-9]{0,})}@@/", $attrConfig['template'], $matches);
+                    //TODO: not done yet
+
+                } elseif(isset($attrConfig['func'])) {
 					if(is_callable($attrConfig['func'])) {
-						echo $attrConfig['func']($single);
+						echo $attrConfig['func']($var);
 					} else {
 						echo $var->{$attrConfig['func']}();
 					}

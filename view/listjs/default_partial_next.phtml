@@ -55,18 +55,22 @@ if(isset($this->searchAndFilter)) {
 				echo '<td class="' . $name . '" >';
 			}
 
-            if(isset($attrConfig['getter'])) {
-                $var = $single->{"get" . $attrConfig['getter']}();
-            } else {
-                $var = $single->{"get" . $name}();
-            }
+			if(isset($attrConfig['getter'])) {
+				if($attrConfig['getter'] === false) {
+					$var = $single;
+				} else {
+					$var = $single->{"get" . $attrConfig['getter']}();
+				}
+			} else {
+				$var = $single->{"get" . $name}();
+			}
 
 			if($var !== null) {
-                if(isset($attrConfig['template'])) {
-                    preg_match_all("/@@{([A-Za-z0-9]{0,})}@@/", $attrConfig['template'], $matches);
-                    //TODO: not done yet
+				if(isset($attrConfig['template'])) {
+					preg_match_all("/@@{([A-Za-z0-9]{0,})}@@/", $attrConfig['template'], $matches);
+					//TODO: not done yet
 
-                } elseif(isset($attrConfig['func'])) {
+				} elseif(isset($attrConfig['func'])) {
 					if(is_callable($attrConfig['func'])) {
 						echo $attrConfig['func']($var);
 					} else {

@@ -70,18 +70,16 @@ class FormGenerator {
 		if(isset($formConfig)) {
 			foreach($formConfig as $name => $input) {
 				if(array_key_exists('after', $input)) {
-					$orders[$input['name']] = $orders[$input['after']] - 10;
+					$orders[$input['after']] = $orders[$input['after']] - 10;
 				}
 
-				if(array_key_exists('type', $input)) {
-					$type = $input['type'];
-				} else {
-					$type = $this->guessType($name);
+				if(!array_key_exists('type', $input)) {
+					$input['type'] = $this->guessType($name);
 				}
 
 				$form->add(array(
 					'name' => $name,
-					'type' => $type,
+					'type' => $input['type'],
 					'options' => array(
 						'label' => $input['label'],
 					),
@@ -168,13 +166,16 @@ class FormGenerator {
 	 */
 	private function makeDataBind($formControl, $name) {
 		$dataBind = '';
+		$this->jsConfig['kjsVar'][$name] = array(
+			'type' => $formControl['type']
+		);
 
 		if(isset($formControl['show'])) {
 			if($formControl['show']['type'] == 'select') {
 				$kjsVar = 'show' . $formControl['show']['relatedElement'] . $formControl['show']['value'];
-				$this->dataBindArray['visible'] = 'visible: show' . $formControl['show']['relatedElement'] . $formControl['show']['value'];
+				$this->dataBindArray['visible'] = 'visible:show' . $formControl['show']['relatedElement'] . $formControl['show']['value'];
 				$dataBind .= $this->dataBindArray['visible'] . ', ';
-				$this->jsConfig['kjsVar'][] = array(
+				$this->jsConfig['kjsVar'][$name]['conditionalInput'] = array(
 					'var' => $kjsVar,
 					'type' => $formControl['show']['type'],
 					'relatedElement' => $formControl['show']['relatedElement'],
@@ -182,6 +183,11 @@ class FormGenerator {
 					'showOnValue' => $formControl['show']['value']
 				);
 			}
+		}
+
+		if(isset($formControl['ajaxAdd']) && $formControl['ajaxAdd'] === true) {
+			$this->jsConfig['kjsVar'][$name]['ajaxAdd'] = true;
+
 		}
 
 		$dataBind .= 'value:' . $name;

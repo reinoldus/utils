@@ -25,16 +25,21 @@ class RouteCheck extends AbstractHelper {
         } else {
             $return = $route["return"];
         }
-        $params = $this->app->getMvcEvent()->getRouteMatch()->getParams();
+        $routeMatch = $this->app->getMvcEvent()->getRouteMatch();
+        if($routeMatch !== null) {
+            $params = $routeMatch->getParams();
 
-        if($route['name'] != $this->app->getMvcEvent()->getRouteMatch()->getMatchedRouteName()) {
-            return $return[1];
-        }
-
-        if(isset($params['action']) && isset($route['action'])) {
-            if($route['action'] != $params['action']) {
+            if($route['name'] != $routeMatch->getMatchedRouteName()) {
                 return $return[1];
             }
+
+            if(isset($params['action']) && isset($route['action'])) {
+                if($route['action'] != $params['action']) {
+                    return $return[1];
+                }
+            }
+        } else {
+            return false;
         }
 
         return $return[0];

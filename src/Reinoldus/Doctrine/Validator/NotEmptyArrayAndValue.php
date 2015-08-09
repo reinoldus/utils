@@ -63,7 +63,7 @@ class NotEmptyArrayAndValue extends AbstractValidator {
                 }
             }
         } else{
-            if(empty(trim($name))) {
+            if(empty(trim($value))) {
                 $this->error(self::SINGLE_NOT);
                 return false;
             }

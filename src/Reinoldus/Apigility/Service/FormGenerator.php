@@ -45,16 +45,24 @@ class FormGenerator {
 		$this->config = $serviceLocator->get('config');
 	}
 
-	/**
-	 * @param string $name
-	 * @return Form
-	 */
-	public function makeForm($name) {
+    /**
+     * @param string $name
+     * @param null $formName
+     * @throws \Exception
+     * @return Form
+     */
+	public function makeForm($name, $formName=null) {
 		$config = $this->config['input_filter_specs'][$name];
 
 		if(isset($this->config['form_config'])) {
 			$formConfig = $this->config['form_config'][str_replace('Validator', 'Form', $name)];
-		}
+		} else {
+            throw new \Exception("Form config not found");
+        }
+
+        if($formName !== NULL) {
+            $formConfig = $formConfig[$formName];
+        }
 
 		$form = new Form();
 

@@ -56,13 +56,11 @@ class NotEmptyArrayAndValue extends AbstractValidator {
         if(is_array($value)) {
             foreach($value as $name) {
                 if(empty(trim($name))) {
-
                     $this->error(self::ARRAY_NOT_ALL);
-
                     return false;
                 }
             }
-        } else{
+        } else {
             if(empty(trim($value))) {
                 $this->error(self::SINGLE_NOT);
                 return false;

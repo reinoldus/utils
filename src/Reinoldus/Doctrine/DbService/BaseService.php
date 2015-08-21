@@ -15,7 +15,9 @@ use Doctrine\ORM\QueryBuilder;
 
 use Doctrine\ORM\NoResultException;
 use Reinoldus\Doctrine\Entity\BaseEntity;
+use Zend\Mvc\MvcEvent;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use ZfcUser\Controller\Plugin\ZfcUserAuthentication;
 
 class BaseService
 {
@@ -35,6 +37,16 @@ class BaseService
 	protected $entityName;
 
 	/**
+	 * @var ZfcUserAuthentication
+	 */
+	protected $auth;
+
+	/**
+	 * @var
+	 */
+	protected $identity;
+
+	/**
 	 * @param EntityManager $em
 	 * @param ServiceLocatorInterface $serviceLocator
 	 * @param string $entityName
@@ -44,6 +56,11 @@ class BaseService
 		$this->em = $em;
 		$this->serviceLocator = $serviceLocator;
 		$this->entityName = $entityName;
+
+		$auth = $this->serviceLocator->get('zfcuser_auth_service');
+		$this->auth = $auth;
+
+		$this->identity = $this->auth->getIdentity();
 	}
 
 	/**
@@ -131,5 +148,9 @@ class BaseService
 	public function findAllOrderBy($order)
 	{
 		return $this->getRepository()->findBy(array(), $order);
+	}
+
+	public function setZFAuthIdentity($identity) {
+		$this->identity = $identity;
 	}
 }

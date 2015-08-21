@@ -32,6 +32,10 @@ abstract class BaseEntity {
 	 */
 	protected $created;
 
+	public function getId() {
+		return $this->id;
+	}
+
 	/**
 	 * @ORM\PrePersist
 	 */
@@ -77,5 +81,11 @@ abstract class BaseEntity {
 
 	public function getAttributes() {
 		return array_keys(get_class_vars(get_class($this)));
+	}
+
+	public function getArrayCopy() {
+		return array(
+			"id" => $this->getId(),
+		);
 	}
 } 

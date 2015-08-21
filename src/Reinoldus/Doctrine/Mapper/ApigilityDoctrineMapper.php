@@ -52,6 +52,9 @@ class ApigilityDoctrineMapper {
 			foreach($attributes as $attribute) {
 				if(method_exists($single, "get" . $attribute)) {
 					$putArray[$attribute] = $single->{"get" . $attribute}();
+					if(method_exists($putArray[$attribute], "getArrayCopy")) {
+						$putArray[$attribute] = $putArray[$attribute]->getArrayCopy();
+					}
 				}
 			}
 
@@ -67,6 +70,9 @@ class ApigilityDoctrineMapper {
 		foreach($attributes as $attribute) {
 			if(method_exists($single, "get" . $attribute)) {
 				$putArray[$attribute] = $single->{"get" . $attribute}();
+			}
+			if(method_exists($putArray[$attribute], "getArrayCopy")) {
+				$putArray[$attribute] = $putArray[$attribute]->getArrayCopy();
 			}
 		}
 

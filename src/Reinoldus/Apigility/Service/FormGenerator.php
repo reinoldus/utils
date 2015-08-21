@@ -43,6 +43,44 @@ class FormGenerator {
 
 		$this->serviceLocator = $serviceLocator;
 		$this->config = $serviceLocator->get('config');
+		$this->form = new Form();
+	}
+
+	/**
+	 * @param $input
+	 * @param $orders
+	 * @param $name
+	 */
+	public function makeInput($input, $orders, $name) {
+//		if(array_key_exists('after', $input)) {
+//			$orders[$input['after']] = $orders[$input['after']] - 10;
+//		}
+
+		if(!array_key_exists('type', $input)) {
+			$input['type'] = $this->guessType($name);
+		}
+
+		$this->form->add(array(
+			'name' => $name,
+			'type' => $input['type'],
+			'options' => array(
+				'label' => $input['label'],
+			),
+			'attributes' => array(
+				'class' => 'form-control ',
+				'placeholder' => 'Bitte ausfüllen',
+				'id' => $this->prefix . $name,
+				//kjs
+				'data-bind' => $this->makeDataBind($input, $name),
+			)
+		)/*, array(
+			'priority' => $orders[$name]
+		)*/);
+
+		if(isset($input['value_options'])) {
+			$this->form->get($name)->setAttribute('options', $input['value_options']);
+		}
+
 	}
 
     /**
@@ -52,6 +90,8 @@ class FormGenerator {
      * @return Form
      */
 	public function makeForm($name, $formName=null) {
+		$this->form = new Form();
+		$this->jsConfig = "";
 		$config = $this->config['input_filter_specs'][$name];
 
 		if(isset($this->config['form_config'])) {
@@ -64,8 +104,6 @@ class FormGenerator {
             $formConfig = $formConfig[$formName];
         }
 
-		$form = new Form();
-
 		$order = 1000 * count($config);
 		$orders = array();
 
@@ -74,39 +112,39 @@ class FormGenerator {
 			$order = $order - 1000;
 		}
 
-		$classes = '';
 		if(isset($formConfig)) {
 			foreach($formConfig as $name => $input) {
-				if(array_key_exists('after', $input)) {
-					$orders[$input['after']] = $orders[$input['after']] - 10;
-				}
-
-				if(!array_key_exists('type', $input)) {
-					$input['type'] = $this->guessType($name);
-				}
-
-				$form->add(array(
-					'name' => $name,
-					'type' => $input['type'],
-					'options' => array(
-						'label' => $input['label'],
-					),
-					'attributes' => array(
-						'class' => 'form-control '.$classes,
-						'placeholder' => 'Bitte ausfüllen',
-						'id' => $this->prefix . $name,
-						//kjs
-						'data-bind' => $this->makeDataBind($input, $name),
-					)
-				), array(
-					'priority' => $orders[$name]
-				));
+				$this->makeInput($input, $orders, $name);
+//				if(array_key_exists('after', $input)) {
+//					$orders[$input['after']] = $orders[$input['after']] - 10;
+//				}
+//
+//				if(!array_key_exists('type', $input)) {
+//					$input['type'] = $this->guessType($name);
+//				}
+//
+//				$form->add(array(
+//					'name' => $name,
+//					'type' => $input['type'],
+//					'options' => array(
+//						'label' => $input['label'],
+//					),
+//					'attributes' => array(
+//						'class' => 'form-control '.$classes,
+//						'placeholder' => 'Bitte ausfüllen',
+//						'id' => $this->prefix . $name,
+//						//kjs
+//						'data-bind' => $this->makeDataBind($input, $name),
+//					)
+//				), array(
+//					'priority' => $orders[$name]
+//				));
 			}
 		} else {
 			throw new \Exception("No form config specified");
 		}
 
-		$form->add(array(
+		$this->form->add(array(
 			'name' => 'id',
 			'type' => 'hidden',
 			'attributes' => array(
@@ -117,7 +155,7 @@ class FormGenerator {
 		));
 
 
-		$form->add(array(
+		$this->form->add(array(
 			'name' => 'submit',
 			'type' => 'Submit',
 			'attributes' => array(
@@ -128,7 +166,7 @@ class FormGenerator {
 			),
 		));
 
-		$form->add(array(
+		$this->form->add(array(
 			'name' => 'update',
 			'type' => 'submit',
 			'attributes' => array(
@@ -139,7 +177,7 @@ class FormGenerator {
 			),
 		));
 
-		$form->add(array(
+		$this->form->add(array(
 			'name' => 'abort',
 			'type' => 'Submit',
 			'attributes' => array(
@@ -150,7 +188,7 @@ class FormGenerator {
 			),
 		));
 
-		return $form;
+		return $this->form;
 	}
 
 	/**
@@ -179,6 +217,9 @@ class FormGenerator {
 		);
 
 		if(isset($formControl['show'])) {
+			/**
+			 * This implements the show on related element stuff.
+			 */
 			if($formControl['show']['type'] == 'select') {
 				$kjsVar = 'show' . $formControl['show']['relatedElement'] . $formControl['show']['value'];
 				$this->dataBindArray['visible'] = 'visible:show' . $formControl['show']['relatedElement'] . $formControl['show']['value'];
@@ -210,5 +251,11 @@ class FormGenerator {
 		} else {
 			return 'text';
 		}
+	}
+
+	public function setPrefix($prefix) {
+		$this->prefix = $prefix;
+
+		return $this;
 	}
 }

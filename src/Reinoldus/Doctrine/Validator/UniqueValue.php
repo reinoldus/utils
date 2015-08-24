@@ -52,7 +52,8 @@ class UniqueValue extends AbstractValidator {
 		 * @var BaseService
 		 */
 		$res = $this->options['service']->findBy(array(
-			$this->options['fields'] => $value
+			$this->options['fields'] => $value,
+            'user' => $this->options['user']
 		));
 
 		if(!empty($res)) {

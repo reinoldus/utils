@@ -6,6 +6,7 @@ $element = $this->element;
 $type = $this->element->getAttribute('type');
 
 $dataBind = $element->getAttribute('data-bind');
+$description = $element->getAttribute('description');
 
 $dataBind = explode(',', $dataBind);
 $dataBindSurrounding = '';
@@ -26,6 +27,9 @@ if(!in_array($type, $noSurrounding)) {
 	<label for="<?=$this->element->getName();?>">
 		<?=$this->label?>
 	</label>
+    <?php if(!empty($description)) {?>
+        <span><?=$description?></span>
+    <?php }?>
 	<span class="error"></span>
 <?php
 }

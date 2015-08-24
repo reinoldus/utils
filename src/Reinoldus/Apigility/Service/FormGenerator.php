@@ -60,19 +60,25 @@ class FormGenerator {
 			$input['type'] = $this->guessType($name);
 		}
 
+        $attributes = array(
+            'class' => 'form-control ',
+            'placeholder' => 'Bitte ausfüllen',
+            'id' => $this->prefix . $name,
+            //kjs
+            'data-bind' => $this->makeDataBind($input, $name),
+        );
+
+        if(array_key_exists('description', $input)) {
+            $attributes['description'] = $input['description'];
+        }
+
 		$this->form->add(array(
 			'name' => $name,
 			'type' => $input['type'],
 			'options' => array(
 				'label' => $input['label'],
 			),
-			'attributes' => array(
-				'class' => 'form-control ',
-				'placeholder' => 'Bitte ausfüllen',
-				'id' => $this->prefix . $name,
-				//kjs
-				'data-bind' => $this->makeDataBind($input, $name),
-			)
+			'attributes' => $attributes
 		)/*, array(
 			'priority' => $orders[$name]
 		)*/);

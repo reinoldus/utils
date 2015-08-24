@@ -37,6 +37,7 @@ class UniqueValueFactory implements FactoryInterface, MutableCreationOptionsInte
 	{
 		if (isset($this->options['service'])) {
 			$service = $validators->getServiceLocator()->get($this->options['service']);
+            $auth = $validators->getServiceLocator()->get('zfcuser_auth_service');
 
 			$fields = $this->options['fields'];
 
@@ -45,6 +46,7 @@ class UniqueValueFactory implements FactoryInterface, MutableCreationOptionsInte
 				array(
 					'service' => $service,
 					'fields' => $fields,
+                    'user' => $auth->getIdentity()
 				)
 			));
 		}

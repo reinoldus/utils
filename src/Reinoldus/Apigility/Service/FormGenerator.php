@@ -39,6 +39,11 @@ class FormGenerator {
 	 */
 	private $prefix = 'apgi_';
 
+    /**
+     * @var array
+     */
+    private $relatedElementKJsVariables = array();
+
 	public function __construct(ServiceLocatorInterface $serviceLocator) {
 
 		$this->serviceLocator = $serviceLocator;
@@ -67,6 +72,10 @@ class FormGenerator {
             //kjs
             'data-bind' => $this->makeDataBind($input, $name),
         );
+
+        if(array_key_exists('attributes', $input)) {
+            $attributes = array_merge($attributes, $input['attributes']);
+        }
 
         if(array_key_exists('description', $input)) {
             $attributes['description'] = $input['description'];
@@ -227,15 +236,25 @@ class FormGenerator {
 			 * This implements the show on related element stuff.
 			 */
 			if($formControl['show']['type'] == 'select') {
-				$kjsVar = 'show' . $formControl['show']['relatedElement'] . $formControl['show']['value'];
-				$this->dataBindArray['visible'] = 'visible:show' . $formControl['show']['relatedElement'] . $formControl['show']['value'];
+
+                $relatedElementKJsVariable = 'related_elements_';
+                while(true) {
+                    $randomValue = mt_rand(1000, 999999999999);
+                    if(!in_array($randomValue, $this->relatedElementKJsVariables)) {
+                        $relatedElementKJsVariable .= $randomValue;
+                        $this->relatedElementKJsVariables[] = $randomValue;
+                        break;
+                    }
+                }
+
+				$this->dataBindArray['visible'] = 'visible:' . $relatedElementKJsVariable;
 				$dataBind .= $this->dataBindArray['visible'] . ', ';
 				$this->jsConfig['kjsVar'][$name]['conditionalInput'] = array(
-					'var' => $kjsVar,
+					'var' => $relatedElementKJsVariable,
 					'type' => $formControl['show']['type'],
 					'relatedElement' => $formControl['show']['relatedElement'],
-					'init' => false,
-					'showOnValue' => $formControl['show']['value']
+					'init' => false,//the initial value for the knockout js variable
+					'showOnValue' => str_replace(' ', '', $formControl['show']['value'])
 				);
 			}
 		}

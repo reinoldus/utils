@@ -40,7 +40,12 @@ abstract class BaseEntity {
 	 * @ORM\PrePersist
 	 */
 	public function onPrePersist() {
-		$this->created = new \DateTime('now');
+		//Would be better in constructor (the created)
+		//and preUpdate hook would be better as well (for modified) :/
+
+		if($this->created === null) {
+			$this->created = new \DateTime('now');
+		}
 		$this->modified = new \DateTime('now');
 	}
 

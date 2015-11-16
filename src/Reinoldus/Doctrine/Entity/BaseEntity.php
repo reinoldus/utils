@@ -43,12 +43,16 @@ abstract class BaseEntity {
 		//Would be better in constructor (the created)
 		//and preUpdate hook would be better as well (for modified) :/
 
-		if($this->created === null) {
-			$this->created = new \DateTime('now');
-		}
+		$this->created = new \DateTime('now');
 		$this->modified = new \DateTime('now');
 	}
 
+	/**
+	 * @ORM\PreUpdate
+	 */
+	public function onPreUpdate() {
+		$this->modified = new \DateTime('now');
+	}
 	/**
 	 * @param \DateTime $created
 	 * @return $this

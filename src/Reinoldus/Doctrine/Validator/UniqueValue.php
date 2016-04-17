@@ -30,6 +30,7 @@ class UniqueValue extends AbstractValidator {
 	);
 
 	public function __construct(array $options) {
+		parent::__construct($options);
 		$this->options = $options;
 
 		$this->abstractOptions['messageTemplates'] = $this->messageTemplates;
@@ -53,8 +54,13 @@ class UniqueValue extends AbstractValidator {
 		 */
 		$res = $this->options['service']->findBy(array(
 			$this->options['fields'] => $value,
-            'user' => $this->options['user']
+			'user' => $this->options['user']
 		));
+
+
+		if(isset($this->options['values']['id']) and $res[0]->getId() === $this->options['values']['id']) {
+			return true;
+		}
 
 		if(!empty($res)) {
 			$this->error(self::EXISTS);

@@ -3,10 +3,12 @@
 namespace Reinoldus\Doctrine\Validator;
 
 use DoctrineModule\Validator\UniqueObject;
+use Zend\Http\Request;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\MutableCreationOptionsInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Stdlib\ArrayUtils;
+use Zend\Validator\ValidatorPluginManager;
 
 
 class UniqueValueFactory implements FactoryInterface, MutableCreationOptionsInterface
@@ -35,9 +37,18 @@ class UniqueValueFactory implements FactoryInterface, MutableCreationOptionsInte
 	 */
 	public function createService(ServiceLocatorInterface $validators)
 	{
+		/**
+		 * @var \Zend\Validator\ValidatorPluginManager $validators
+		 */
 		if (isset($this->options['service'])) {
 			$service = $validators->getServiceLocator()->get($this->options['service']);
             $auth = $validators->getServiceLocator()->get('zfcuser_auth_service');
+
+			/**
+			 * @var \ZF\ContentNegotiation\Request $request
+			 */
+			$request = $validators->getServiceLocator()->get('Request');
+			$values = json_decode($request->getContent(), true);
 
 			$fields = $this->options['fields'];
 
@@ -46,7 +57,8 @@ class UniqueValueFactory implements FactoryInterface, MutableCreationOptionsInte
 				array(
 					'service' => $service,
 					'fields' => $fields,
-                    'user' => $auth->getIdentity()
+                    'user' => $auth->getIdentity(),
+					'values' => $values
 				)
 			));
 		}

@@ -22,12 +22,51 @@ class ApigilityDoctrineMapper {
 		$this->serviceLocator = $serviceLocator;
 	}
 
+	/**
+	 * Not safe for every purpose...
+	 * Use only if you are sure the vars are written sanely:
+	 * a_b not a_ or something...
+	 *
+	 * @param $string
+	 * @return mixed
+	 */
+	private function convertToCamelCase($string) {
+		while(($position = strpos($string, '_')) !== false) {
+			$letter = substr($string, $position + 1, 1);
+			$letter = strtoupper($letter);
 
-	public function create(BaseEntity $entity, $data) {
+			$string = substr_replace($string, $letter, $position, 2);
+		}
+
+		return $string;
+	}
+
+	/**
+	 *
+	 * @param $string
+	 * @return mixed
+	 */
+	private function convertFromCamelCase($string) {
+		return ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', $string)), '_');
+	}
+
+	public function create(BaseEntity $entity, $data, $convertToCamelCase = false) {
 		$attributes = $entity->getAttributes();
 
 		if(!is_object($data)) {
 			throw new \Exception("No data object provided");
+		}
+
+		if($convertToCamelCase) {
+			$newData = new \stdClass();
+			foreach($data as $key => $value) {
+				if($key != $this->convertToCamelCase($key)) {
+					$newData->{$this->convertToCamelCase($key)} = $value;
+				} else {
+					$newData->{$key} = $value;
+				}
+			}
+			$data = $newData;
 		}
 
 		foreach($attributes as $attribute) {
@@ -41,7 +80,7 @@ class ApigilityDoctrineMapper {
 		return $entity;
 	}
 
-	public function getArrayAll($all) {
+	public function getArrayAll($all, $toUnderscore=false) {
 		$return = [];
 		foreach($all as $single) {
 			/**
@@ -51,9 +90,16 @@ class ApigilityDoctrineMapper {
 			$putArray = array();
 			foreach($attributes as $attribute) {
 				if(method_exists($single, "get" . $attribute)) {
-					$putArray[$attribute] = $single->{"get" . $attribute}();
-					if(method_exists($putArray[$attribute], "getArrayCopy")) {
-						$putArray[$attribute] = $putArray[$attribute]->getArrayCopy();
+
+					if($toUnderscore) {
+						$attribute_name = $this->convertFromCamelCase($attribute);
+					} else {
+						$attribute_name = $attribute;
+					}
+
+					$putArray[$attribute_name] = $single->{"get" . $attribute}();
+					if(method_exists($putArray[$attribute_name], "getArrayCopy")) {
+						$putArray[$attribute_name] = $putArray[$attribute_name]->getArrayCopy();
 					}
 				}
 			}

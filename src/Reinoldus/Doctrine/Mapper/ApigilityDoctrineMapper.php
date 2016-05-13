@@ -8,6 +8,7 @@
 
 namespace Reinoldus\Doctrine\Mapper;
 
+use Doctrine\Common\Collections\Collection;
 use Reinoldus\Doctrine\Entity\BaseEntity;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -101,6 +102,11 @@ class ApigilityDoctrineMapper {
 					if(method_exists($putArray[$attribute_name], "getArrayCopy")) {
 						$putArray[$attribute_name] = $putArray[$attribute_name]->getArrayCopy();
 					}
+					if($putArray[$attribute_name] instanceof Collection) {
+						$putArray[$attribute_name] = $putArray[$attribute_name]->getValues();
+						$putArray[$attribute_name] = array_map(array($this, "getArraySingle"), $putArray[$attribute_name], array(true));
+					}
+
 				}
 			}
 
@@ -110,22 +116,49 @@ class ApigilityDoctrineMapper {
 		return $return;
 	}
 
-	public function getArraySingle(BaseEntity $single) {
+	public function getArraySingle(BaseEntity $single=null, $toUnderscore=false) {
+
+		if($single === null) {
+			return [];
+		}
+
 		$attributes = $single->getAttributes();
 		$putArray = array();
 		foreach($attributes as $attribute) {
-			if(method_exists($single, "get" . $attribute)) {
-				$putArray[$attribute] = $single->{"get" . $attribute}();
+
+			if($toUnderscore) {
+				$attribute_name = $this->convertFromCamelCase($attribute);
+			} else {
+				$attribute_name = $attribute;
 			}
-			if(method_exists($putArray[$attribute], "getArrayCopy")) {
-				$putArray[$attribute] = $putArray[$attribute]->getArrayCopy();
+
+			if(method_exists($single, "get" . $attribute)) {
+				$putArray[$attribute_name] = $single->{"get" . $attribute}();
+			}
+			if(method_exists($putArray[$attribute_name], "getArrayCopy")) {
+				$putArray[$attribute_name] = $putArray[$attribute]->getArrayCopy();
+			}
+			if($putArray[$attribute_name] instanceof Collection) {
+				$putArray[$attribute_name] = $putArray[$attribute_name]->getValues();
+				$putArray[$attribute_name] = array_map(array($this, "getArraySingle"), $putArray[$attribute_name], array(true));
 			}
 		}
 
 		return $putArray;
 	}
 
-	public function updateSingle($data, BaseEntity $model, $except=array()) {
+	public function updateSingle($data, BaseEntity $model, $except=array(), $convertToCamelCase = false) {
+		if($convertToCamelCase) {
+			$newData = new \stdClass();
+			foreach($data as $key => $value) {
+				if($key != $this->convertToCamelCase($key)) {
+					$newData->{$this->convertToCamelCase($key)} = $value;
+				} else {
+					$newData->{$key} = $value;
+				}
+			}
+			$data = $newData;
+		}
 
 		foreach($model->getAttributes() as $attribute) {
 			if(!in_array($attribute, $except) && property_exists($data, $attribute)) {

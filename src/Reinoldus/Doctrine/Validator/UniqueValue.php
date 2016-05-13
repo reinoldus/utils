@@ -57,6 +57,9 @@ class UniqueValue extends AbstractValidator {
 			'user' => $this->options['user']
 		));
 
+		if(empty($res)) {
+			return true;
+		}
 
 		if(isset($this->options['values']['id']) and $res[0]->getId() === $this->options['values']['id']) {
 			return true;

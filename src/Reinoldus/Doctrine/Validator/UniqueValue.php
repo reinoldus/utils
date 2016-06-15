@@ -10,6 +10,7 @@ namespace Reinoldus\Doctrine\Validator;
 
 
 use Reinoldus\Doctrine\DbService\BaseService;
+use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\Validator\AbstractValidator;
 use Zend\Validator\Exception;
 
@@ -49,6 +50,7 @@ class UniqueValue extends AbstractValidator {
 	 */
 	public function isValid($value)
 	{
+
 		/**
 		 * @var BaseService
 		 */
@@ -58,6 +60,11 @@ class UniqueValue extends AbstractValidator {
 		));
 
 		if(empty($res)) {
+			return true;
+		}
+
+		//TODO THE EXCEPT SHIT IS MESSED UP!
+		if(array_key_exists('except', $this->options) && ($res) ? 'true' : 'false' == $this->options['except']) {
 			return true;
 		}
 

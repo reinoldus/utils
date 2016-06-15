@@ -16,18 +16,22 @@ return array(
 		),
 		'invokables' => array(
 			'Reinoldus\Doctrine\Mapper\ApigilityDoctrineToArray' => 'Reinoldus\Doctrine\Mapper\ApigilityDoctrineToArray'
-		)
+		),
 	),
 	'validators' => array(
 		'factories' => array(
-			'Reinoldus\Doctrine\Validator\UniqueValue' => 'Reinoldus\Doctrine\Validator\UniqueValueFactory',
+			'Reinoldus\Doctrine\Validator\UniqueValueValidator' => 'Reinoldus\Doctrine\Validator\UniqueValueFactory',
 			'Reinoldus\Doctrine\Validator\NotEmptyArrayAndValue' => 'Reinoldus\Doctrine\Validator\NotEmptyArrayAndValueFactory'
 		),
+		'shared' => array(
+			'Reinoldus\Doctrine\Validator\UniqueValueValidator' => false
+		)
 	),
 	'validator_metadata' => array(
-		'Reinoldus\Doctrine\Validator\UniqueValue' => array(
+		'Reinoldus\Doctrine\Validator\UniqueValueValidator' => array(
 			'service' => 'string',
 			'fields' => 'string',
+			'except' => 'string'
 		),
 		'Reinoldus\Doctrine\Validator\NotEmptyArrayAndValue' => array(
 			'message' => 'string',

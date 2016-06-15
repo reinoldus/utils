@@ -61,6 +61,8 @@ class UniqueValueFactory implements FactoryInterface, MutableCreationOptionsInte
 					'values' => $values
 				)
 			));
+		} else {
+			return false;
 		}
 	}
 }

@@ -21,7 +21,8 @@ return array(
 	'validators' => array(
 		'factories' => array(
 			'Reinoldus\Doctrine\Validator\UniqueValueValidator' => 'Reinoldus\Doctrine\Validator\UniqueValueFactory',
-			'Reinoldus\Doctrine\Validator\NotEmptyArrayAndValue' => 'Reinoldus\Doctrine\Validator\NotEmptyArrayAndValueFactory'
+			'Reinoldus\Doctrine\Validator\NotEmptyArrayAndValue' => 'Reinoldus\Doctrine\Validator\NotEmptyArrayAndValueFactory',
+			'Reinoldus\Doctrine\Validator\ArrayNotEmptyAndRegex' => 'Reinoldus\Doctrine\Validator\ArrayNotEmptyAndRegexFactory'
 		),
 		'shared' => array(
 			'Reinoldus\Doctrine\Validator\UniqueValueValidator' => false
@@ -35,6 +36,10 @@ return array(
 		),
 		'Reinoldus\Doctrine\Validator\NotEmptyArrayAndValue' => array(
 			'message' => 'string',
+		),
+		'Reinoldus\Doctrine\Validator\ArrayNotEmptyAndRegex' => array(
+			'message' => 'string',
+			'regex' => 'string'
 		)
 	),
 	'view_helpers' => array(

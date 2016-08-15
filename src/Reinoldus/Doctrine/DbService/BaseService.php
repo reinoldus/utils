@@ -55,7 +55,13 @@ class BaseService
 	{
 		$this->em = $em;
 		$this->serviceLocator = $serviceLocator;
-		$this->entityName = $entityName;
+		$this->em = $serviceLocator->get("Doctrine\ORM\EntityManager");
+
+		if($entityName === null) {
+			$this->entityName = str_replace('Service', '', str_replace('Service', 'Entity', get_class($this)));
+		} else {
+			$this->entityName = $entityName;
+		}
 
 		$auth = $this->serviceLocator->get('zfcuser_auth_service');
 		$this->auth = $auth;
@@ -152,5 +158,9 @@ class BaseService
 
 	public function setZFAuthIdentity($identity) {
 		$this->identity = $identity;
+	}
+
+	public function getEntityName() {
+		return $this->entityName;
 	}
 }

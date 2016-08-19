@@ -47,7 +47,7 @@ class ApigilityDoctrineMapper {
 	 * @param $string
 	 * @return mixed
 	 */
-	private function convertFromCamelCase($string) {
+	public function convertFromCamelCase($string) {
 		return ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', $string)), '_');
 	}
 

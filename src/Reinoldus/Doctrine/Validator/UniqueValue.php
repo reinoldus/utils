@@ -64,8 +64,10 @@ class UniqueValue extends AbstractValidator {
 		}
 
 		//TODO THE EXCEPT SHIT IS MESSED UP!
-		if(array_key_exists('except', $this->options) && ($res) ? 'true' : 'false' == $this->options['except']) {
-			return true;
+		if(array_key_exists('except', $this->options)) {
+			if(($res) ? 'true' : 'false' == $this->options['except']) {
+				return true;
+			}
 		}
 
 		if(isset($this->options['values']['id']) and $res[0]->getId() === $this->options['values']['id']) {
